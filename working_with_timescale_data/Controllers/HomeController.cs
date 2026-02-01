@@ -1,11 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using working_with_timescale_data.Models;
-
+using working_with_timescale_data.Models.DbContextDir;
 namespace working_with_timescale_data.Controllers
 {
-    public class HomeController : Controller
+    [Controller]
+    public class MeasurementsController : Controller
     {
+        private readonly TimescaleDb _context;
+        public MeasurementsController(TimescaleDb context)
+        {
+            _context = context;
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadCsv()
+        {
+
+        }
+
+
+
     }
-      
+
 }

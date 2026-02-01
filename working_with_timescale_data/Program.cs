@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using working_with_timescale_data.Models.DbContextDir;
 
 namespace working_with_timescale_data;
@@ -8,7 +9,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddControllersWithViews();
-        builder.Services.AddDbContext<TimescaleDb>();
+        var connect = builder.Configuration.GetConnectionString("TimescaleDb");
+        builder.Services.AddDbContext<TimescaleDb>(c=>c.UseNpgsql(connect??throw new NullReferenceException()));
 
 
         var app = builder.Build();
