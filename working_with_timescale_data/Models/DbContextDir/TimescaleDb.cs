@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection.PortableExecutable;
 
-namespace working_with_timescale_data.Models;
+namespace working_with_timescale_data.Models.DbContextDir;
 
 public class TimescaleDb: DbContext
 {
