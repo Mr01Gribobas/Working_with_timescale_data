@@ -14,7 +14,7 @@ namespace working_with_timescale_data.Controllers
         [HttpPost("upload")]
         public async Task<IActionResult> UploadCsv()
         {
-
+            return default;
         }
 
 
