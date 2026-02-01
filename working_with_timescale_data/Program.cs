@@ -14,7 +14,12 @@ public class Program
 
 
         var app = builder.Build();
-
+        app.UseCors(c =>
+        {
+            c.AllowAnyOrigin();
+            c.AllowAnyMethod();  
+            c.AllowAnyHeader();
+        });
         if(!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Home/Error");
