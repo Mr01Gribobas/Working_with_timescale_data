@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using working_with_timescale_data.Models.DbContextDir;
 using working_with_timescale_data.Models.ModelsEntity;
 namespace working_with_timescale_data.Controllers;
@@ -23,31 +24,90 @@ public class MeasurementsController : Controller
     [HttpPost]
     public async Task<IActionResult> UploadCsv(IFormFile form)
     {
-        try
+        using(IDbContextTransaction contextTransaction = await _context.Database.BeginTransactionAsync())
         {
-            List<CsvRow> rows = await ParseCsvAsync(form);
-            ValidateRows(rows);
-
-            var fileName = Path.GetFileNameWithoutExtension(form.FileName);
-            await DeleteExistingData(fileName);
-
-            var newMeasurements = rows.Select(r => new MeasurementEntity
+            try
             {
-                FileName = fileName,
-                Date = r.Date,
-                ExecutionTime = r.ExecutionTime,
-                Value = r.Value
-            }).ToList();
+                List<CsvRow> rows = await ParseCsvAsync(form);
+                ValidateRows(rows);
 
-            FileResultEntity fileResult = await CalculatinReasultsAndSave(newMeasurements, fileName, rows);
+                var fileName = Path.GetFileNameWithoutExtension(form.FileName);
+                await DeleteExistingData(fileName);
 
-            return Ok(fileResult);
-        }
-        catch(Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
+                var newMeasurements = rows.Select(r => new MeasurementEntity
+                {
+                    FileName = fileName,
+                    Date = r.Date,
+                    ExecutionTime = r.ExecutionTime,
+                    Value = r.Value
+                }).ToList();
+
+                FileResultEntity fileResult = await CalculatinReasultsAndSave(newMeasurements, fileName, rows);
+
+                contextTransaction.Commit();
+                return Ok(fileResult);
+            }
+            catch(Exception ex)
+            {
+                await contextTransaction.RollbackAsync();
+                return BadRequest(new { error = ex.Message });
+            }
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetResults(
+                                     string? fileName = null,
+                                     DateTime? startFrom = null,
+                                     DateTime? startto = null,
+                                     double? avgValueFrom = null,
+                                     double? avgValueTo = null,
+                                     double? avgTimeFrom = null,
+                                     double? avgTimeTo = null
+                                                           )
+    {
+        var query = _context.FileResults.AsQueryable();
+
+        if(!string.IsNullOrEmpty(fileName))
+            query = query.Where(x => x.FileName == fileName);
+        //
+
+        if(startFrom.HasValue)
+            query = query.Where(x => x.FirstoperationTime >= startFrom.Value);
+
+        if(startto.HasValue)
+            query = query.Where(x => x.FirstoperationTime <= startto.Value);
+        //
+
+        if(avgValueFrom.HasValue)
+            query = query.Where(x => x.AvgValue >= avgValueFrom.Value);
+
+        if(avgValueTo.HasValue)
+            query = query.Where(x => x.AvgValue <= avgValueTo.Value);
+        //
+
+        if(avgTimeFrom.HasValue)
+            query = query.Where(x => x.AvgExecutionTime >= avgTimeFrom.Value);
+
+        if(avgTimeTo.HasValue)
+            query = query.Where(x => x.AvgExecutionTime <= avgTimeTo.Value);
+        //
+
+        var results = await query.ToListAsync();
+        return Ok(results);
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetLatest(string fileName)
+    {
+        var measurments = await _context.Measurements
+                                .Where(m=>m.FileName == fileName)
+                                .OrderByDescending(m=>m.Date)
+                                .Take(10)
+                                .Select(m => new {m.Date,m.ExecutionTime,m.Value})
+                                .ToListAsync();
+        return Ok(measurments);
+    }
+
 
     private async Task<FileResultEntity> CalculatinReasultsAndSave(List<MeasurementEntity> newMeasurements, string fileName, List<CsvRow> rows)
     {
