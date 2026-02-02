@@ -15,7 +15,7 @@ public class TimescaleDb: DbContext
     }
     public TimescaleDb(DbContextOptions<TimescaleDb> options):base (options)
     {
-        Database.EnsureCreated();
+        //Database.EnsureCreated();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

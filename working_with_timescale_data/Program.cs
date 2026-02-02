@@ -16,7 +16,8 @@ public class Program
         var app = builder.Build();
         app.UseCors(c =>
         {
-            c.AllowAnyOrigin();
+            c.AllowCredentials();
+            //c.AllowAnyOrigin();
             c.AllowAnyMethod();  
             c.AllowAnyHeader();
         });
@@ -27,7 +28,7 @@ public class Program
         }
         app.UseHttpsRedirection();
         app.UseRouting();
-
+       
         app.UseAuthorization();
 
         app.MapStaticAssets();
