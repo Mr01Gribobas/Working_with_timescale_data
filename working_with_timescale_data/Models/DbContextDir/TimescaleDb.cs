@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Reflection.PortableExecutable;
-using working_with_timescale_data.Models.ModelsEntity;
-
-namespace working_with_timescale_data.Models.DbContextDir;
+﻿namespace working_with_timescale_data.Models.DbContextDir;
 
 public class TimescaleDb: DbContext
 {

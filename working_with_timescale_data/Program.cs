@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using working_with_timescale_data.Models.DbContextDir;
-
 namespace working_with_timescale_data;
 
 public class Program

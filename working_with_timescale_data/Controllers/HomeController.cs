@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using working_with_timescale_data.Models.DbContextDir;
-using working_with_timescale_data.Models.ModelsEntity;
 namespace working_with_timescale_data.Controllers;
 
 [Controller]

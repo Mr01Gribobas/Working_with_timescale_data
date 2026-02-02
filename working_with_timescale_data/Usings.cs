@@ -1,0 +1,10 @@
+﻿global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using working_with_timescale_data.Models.ModelsEntity;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore.Storage;
+global using working_with_timescale_data.Models.DbContextDir;
+global using Microsoft.EntityFrameworkCore.Infrastructure;
+global using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+global using Microsoft.EntityFrameworkCore.Migrations;
+namespace working_with_timescale_data;
